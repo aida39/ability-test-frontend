@@ -6,12 +6,14 @@ body {
 
 h1 {
     font-family: 'Inika', serif;
-    padding: 10px 0;
+    padding: 20px 0;
+    font-size: 30px;
 }
 
 input, select, textarea {
     background-color: #f4f4f4;
     padding: 0 20px;
+    margin: 0 10px;
     border: none;
     font-size: 14px;
 }
@@ -22,6 +24,7 @@ input[type="radio"] {
     appearance: none;
     width: 17px;
     height: 17px;
+    padding: 0;
     border-radius: 50%;
     border: 1px solid #8B7969;
 }
@@ -33,6 +36,7 @@ input[type="radio"]:checked {
 
 textarea {
     padding: 20px;
+    margin-bottom: 20px; /* 追加: ボタンとのスペースを確保 */
 }
 
 .header {
@@ -69,7 +73,7 @@ textarea {
 }
 
 .button__area {
-    padding: 20px 0;
+    margin: 20px 0;
     text-align: center;
 }
 
