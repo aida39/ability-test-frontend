@@ -1,3 +1,50 @@
+<script setup>
+import { useField, useForm } from 'vee-validate';
+import * as yup from 'yup';
+
+const schema = yup.object({
+  lastName: yup
+    .string()
+    .required("姓を入力してください"),
+  firstName: yup
+    .string()
+    .required("名を入力してください"),
+  email: yup
+    .string()
+    .required("メールアドレスを入力してください")
+    .email("メールアドレスの形式で入力してください"),
+  address: yup
+    .string()
+    .required("住所を入力してください"),
+  detail: yup
+    .string()
+    .required("お問い合わせ内容を入力してください")
+    .max(120,"120文字以内で入力してください"),
+
+});
+
+const { errors } = useForm({
+  validationSchema: schema,
+});
+
+const { value: lastName } = useField('lastName');
+const { value: firstName } = useField('firstName');
+const { value: email } = useField('email');
+const { value: address } = useField('address');
+const { value: detail } = useField('detail');
+
+const { value: tellFirst } = useField('tellFirst');
+const { value: tellSecond } = useField('tellSecond');
+const { value: tellThird } = useField('tellThird');
+
+const getTellError = () => {
+  if (!tellFirst.value || !tellSecond.value || !tellThird.value) {
+    return "電話番号を入力してください";
+  }
+  return '';
+};
+</script>
+
 <template>
   <div class="contact-form__content">
     <div class="contact-form__heading">
@@ -11,12 +58,14 @@
         </div>
         <div class="form__group-content">
           <div class="form__input--name">
-            <input type="text" name="last_name" placeholder="例: 山田" />
-            <input type="text" name="first_name" placeholder="例: 太郎" />
+            <input type="text" name="last_name" v-model="lastName" placeholder="例: 山田" />
+            <input type="text" name="first_name" v-model="firstName" placeholder="例: 太郎" />
           </div>
         </div>
       </div>
       <div class="error-message">
+        {{ errors.lastName }}
+        {{ errors.firstName }}
       </div>
       <div class="form__group">
         <div class="form__group-title">
@@ -47,11 +96,12 @@
         </div>
         <div class="form__group-content">
           <div class="form__input--text">
-            <input type="email" name="email" placeholder="例: test@example.com" />
+            <input type="email" name="email" v-model="email" placeholder="例: test@example.com" />
           </div>
         </div>
       </div>
       <div class="error-message">
+        {{ errors.email }}
       </div>
       <div class="form__group">
         <div class="form__group-title">
@@ -60,15 +110,16 @@
         </div>
         <div class="form__group-content">
           <div class="form__input--tel">
-            <input type="tel" name="tell-first" placeholder="080" />
+            <input type="tel" name="tell-first" v-model="tellFirst" placeholder="080" />
             <span>-</span>
-            <input type="tel" name="tell-second" placeholder="1234" />
+            <input type="tel" name="tell-second" v-model="tellSecond" placeholder="1234" />
             <span>-</span>
-            <input type="tel" name="tell-third" placeholder="5678" />
+            <input type="tel" name="tell-third" v-model="tellThird" placeholder="5678" />
           </div>
         </div>
       </div>
-      <div class="error-message">
+      <div class="error-message" style="margin-left: 4px;">
+        {{ getTellError() }}
       </div>
       <div class="form__group">
         <div class="form__group-title">
@@ -77,11 +128,12 @@
         </div>
         <div class="form__group-content">
           <div class="form__input--text">
-            <input type="text" name="address" placeholder="例: 東京都渋谷区千駄ヶ谷1-2-3"  />
+            <input type="text" name="address" v-model="address" placeholder="例: 東京都渋谷区千駄ヶ谷1-2-3" />
           </div>
         </div>
       </div>
       <div class="error-message">
+        {{ errors.address }}
       </div>
       <div class="form__group">
         <div class="form__group-title">
@@ -89,7 +141,7 @@
         </div>
         <div class="form__group-content">
           <div class="form__input--text">
-            <input type="text" name="building" placeholder="例: 千駄ヶ谷マンション101"  />
+            <input type="text" name="building" placeholder="例: 千駄ヶ谷マンション101" />
           </div>
         </div>
       </div>
@@ -116,12 +168,13 @@
         </div>
         <div class="form__group-content">
           <div class="form__input--text">
-            <textarea class="form__input--textarea" name="detail"
+            <textarea class="form__input--textarea" name="detail" v-model="detail"
               placeholder="お問い合わせ内容をご記載ください"></textarea>
           </div>
         </div>
       </div>
       <div class="error-message">
+        {{ errors.detail }}
       </div>
       <div class="button__area">
         <button class="common-button" type="submit">確認画面</button>

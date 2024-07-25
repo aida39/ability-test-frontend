@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "nuxt": "^3.12.4",
-    "vue": "latest"
+    "vee-validate": "^4.13.2",
+    "vue": "latest",
+    "yup": "^1.4.0"
   }
 }
