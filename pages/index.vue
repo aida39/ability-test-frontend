@@ -19,7 +19,7 @@ const schema = yup.object({
   detail: yup
     .string()
     .required("お問い合わせ内容を入力してください")
-    .max(120,"120文字以内で入力してください"),
+    .max(120, "120文字以内で入力してください"),
 
 });
 
@@ -43,6 +43,15 @@ const getTellError = () => {
   }
   return '';
 };
+
+import { ref } from 'vue'
+import { useFetch } from '#app'
+
+const categoryLists = ref([])
+
+const { data } = await useFetch('http://127.0.0.1:80/api/')
+categoryLists.value = data.value.data
+
 </script>
 
 <template>
@@ -154,7 +163,8 @@ const getTellError = () => {
           <div class="form__input--text">
             <select name="category_id">
               <option value="">選択してください</option>
-              <option value=""></option>
+              <option v-for="category in categoryLists" :key="category.id">{{ category.content }}
+              </option>
             </select>
           </div>
         </div>
