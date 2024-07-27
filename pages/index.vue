@@ -20,7 +20,6 @@ const schema = yup.object({
     .string()
     .required("お問い合わせ内容を入力してください")
     .max(120, "120文字以内で入力してください"),
-
 });
 
 const { errors } = useForm({
@@ -44,6 +43,12 @@ const getTellError = () => {
   return '';
 };
 
+const inputEmail = getContact();
+
+watch(inputEmail, (newValue) => {
+  email.value = newValue;
+});
+
 import { ref } from 'vue'
 import { useFetch } from '#app'
 
@@ -59,7 +64,7 @@ categoryLists.value = data.value.data
     <div class="contact-form__heading">
       <h1>Contact</h1>
     </div>
-    <form class="form" action="/confirm" method="post">
+    <div class="form">
       <div class="form__group">
         <div class="form__group-title">
           <span class="form__label--item">お名前</span>
@@ -105,7 +110,7 @@ categoryLists.value = data.value.data
         </div>
         <div class="form__group-content">
           <div class="form__input--text">
-            <input type="email" name="email" v-model="email" placeholder="例: test@example.com" />
+            <input type="email" name="email" v-model="inputEmail" placeholder="例: test@example.com" />
           </div>
         </div>
       </div>
@@ -187,9 +192,9 @@ categoryLists.value = data.value.data
         {{ errors.detail }}
       </div>
       <div class="button__area">
-        <button class="common-button" type="submit">確認画面</button>
+        <NuxtLink class="common-button" to="/confirm">確認画面</NuxtLink>
       </div>
-    </form>
+    </div>
   </div>
 </template>
 
