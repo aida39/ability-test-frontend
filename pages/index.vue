@@ -47,6 +47,10 @@ const getTellError = () => {
   return '';
 };
 
+const hasErrors = computed(() => {
+  return Object.keys(errors.value).length > 0 || getTellError() !== '';
+});
+
 const categoryLists = ref([])
 
 const { data } = await useFetch('http://127.0.0.1:80/api/')
@@ -232,7 +236,9 @@ watch(category, (newValue) => { formData.value.category = newValue });
         {{ errors.detail }}
       </div>
       <div class="button__area">
-        <NuxtLink class="common-button" to="/confirm">確認画面</NuxtLink>
+        <NuxtLink class="common-button" :class="{ 'disabled': hasErrors }" :to="hasErrors ? null : '/confirm'">
+          確認画面
+        </NuxtLink>
       </div>
     </div>
   </div>
