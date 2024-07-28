@@ -13,6 +13,30 @@ const getGenderText = (value) => {
             return "未選択";
     }
 }
+
+const submitForm = async () => {
+    const { data, error } = await useFetch('http://127.0.0.1:80/api/contact', {
+        method: 'POST',
+        body: {
+            first_name: formData.value.firstName,
+            last_name: formData.value.lastName,
+            gender: formData.value.gender,
+            email: formData.value.email,
+            tell: `${formData.value.tellFirst}${formData.value.tellSecond}${formData.value.tellThird}`,
+            address: formData.value.address,
+            building: formData.value.building,
+            category_id: formData.value.category.id,
+            detail: formData.value.detail
+        }
+    });
+
+    if (error.value) {
+        console.error('Error submitting form:', error.value);
+    } else {
+        return navigateTo('/thanks');
+    }
+}
+
 </script>
 
 <template>
@@ -20,7 +44,7 @@ const getGenderText = (value) => {
         <div class="confirm__heading">
             <h1>Confirm</h1>
         </div>
-        <form class="form" action="/thanks" method="post">
+        <form class="form" @submit.prevent="submitForm">
             <div class="confirm-table">
                 <table class="confirm-table__inner">
                     <tr class="confirm-table__row">
