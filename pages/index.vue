@@ -1,6 +1,8 @@
 <script setup>
 import { useField, useForm } from 'vee-validate';
 import * as yup from 'yup';
+import { ref } from 'vue'
+import { useFetch } from '#app'
 
 const schema = yup.object({
   lastName: yup
@@ -28,10 +30,12 @@ const { errors } = useForm({
 
 const { value: lastName } = useField('lastName');
 const { value: firstName } = useField('firstName');
+const { value: gender } = useField('gender');
 const { value: email } = useField('email');
 const { value: address } = useField('address');
+const { value: category } = useField('category');
 const { value: detail } = useField('detail');
-
+const { value: building } = useField('building');
 const { value: tellFirst } = useField('tellFirst');
 const { value: tellSecond } = useField('tellSecond');
 const { value: tellThird } = useField('tellThird');
@@ -43,19 +47,55 @@ const getTellError = () => {
   return '';
 };
 
-const inputEmail = getContact();
-
-watch(inputEmail, (newValue) => {
-  email.value = newValue;
-});
-
-import { ref } from 'vue'
-import { useFetch } from '#app'
-
 const categoryLists = ref([])
 
 const { data } = await useFetch('http://127.0.0.1:80/api/')
 categoryLists.value = data.value.data
+
+const formData = useState('formData', () => ({
+  lastName: '',
+  firstName: '',
+  gender: '1',
+  email: '',
+  tellFirst: '',
+  tellSecond: '',
+  tellThird: '',
+  address: '',
+  building: '',
+  category: '',
+  detail: '',
+}))
+
+const initializeFormData = () => {
+  lastName.value = formData.value.lastName;
+  firstName.value = formData.value.firstName;
+  gender.value = formData.value.gender;
+  email.value = formData.value.email;
+  tellFirst.value = formData.value.tellFirst;
+  tellSecond.value = formData.value.tellSecond;
+  tellThird.value = formData.value.tellThird;
+  address.value = formData.value.address;
+  building.value = formData.value.building;
+  detail.value = formData.value.detail;
+  category.value = formData.value.category;
+};
+
+// コンポーネントがマウントされたときに初期値を設定
+onMounted(() => {
+  initializeFormData();
+});
+
+watch(lastName, (newValue) => { formData.value.lastName = newValue });
+watch(firstName, (newValue) => { formData.value.firstName = newValue });
+watch(gender, (newValue) => { formData.value.gender = newValue });
+watch(email, (newValue) => { formData.value.email = newValue });
+watch(tellFirst, (newValue) => { formData.value.tellFirst = newValue });
+watch(tellSecond, (newValue) => { formData.value.tellSecond = newValue });
+watch(tellThird, (newValue) => { formData.value.tellThird = newValue });
+watch(address, (newValue) => { formData.value.address = newValue });
+watch(building, (newValue) => { formData.value.building = newValue });
+watch(detail, (newValue) => { formData.value.detail = newValue });
+watch(category, (newValue) => { formData.value.category = newValue });
 
 </script>
 
@@ -88,15 +128,15 @@ categoryLists.value = data.value.data
         </div>
         <div class="form__group-content">
           <div class="form__input--radio">
-            <input type="radio" id="male" name="gender" value="1" checked />
+            <input type="radio" id="male" name="gender" value="1" v-model="gender" checked />
             <label for="male">男性</label>
           </div>
           <div class="form__input--radio">
-            <input type="radio" id="female" name="gender" value="2" />
+            <input type="radio" id="female" name="gender" value="2" v-model="gender" />
             <label for="female">女性</label>
           </div>
           <div class="form__input--radio">
-            <input type="radio" id="others" name="gender" value="3" />
+            <input type="radio" id="others" name="gender" value="3" v-model="gender" />
             <label for="others">その他</label>
           </div>
         </div>
@@ -110,7 +150,7 @@ categoryLists.value = data.value.data
         </div>
         <div class="form__group-content">
           <div class="form__input--text">
-            <input type="email" name="email" v-model="inputEmail" placeholder="例: test@example.com" />
+            <input type="email" name="email" v-model="email" placeholder="例: test@example.com" />
           </div>
         </div>
       </div>
@@ -155,7 +195,7 @@ categoryLists.value = data.value.data
         </div>
         <div class="form__group-content">
           <div class="form__input--text">
-            <input type="text" name="building" placeholder="例: 千駄ヶ谷マンション101" />
+            <input type="text" name="building" v-model="building" placeholder="例: 千駄ヶ谷マンション101" />
           </div>
         </div>
       </div>
@@ -166,9 +206,9 @@ categoryLists.value = data.value.data
         </div>
         <div class="form__group-content">
           <div class="form__input--text">
-            <select name="category_id">
+            <select name="category_id" v-model="category">
               <option value="">選択してください</option>
-              <option v-for="category in categoryLists" :key="category.id">{{ category.content }}
+              <option v-for="category in categoryLists" :key="category.id" :value="category">{{ category.content }}
               </option>
             </select>
           </div>
