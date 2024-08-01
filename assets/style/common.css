@@ -67,6 +67,8 @@ textarea {
     right: 20px;
     background-color: #f6f6f6;
     border: 1px solid;
+    text-align: center;
+    text-decoration: none;
     color: #D9C6B5;
     font-size: 14px;
     font-family: 'Inika', serif;
