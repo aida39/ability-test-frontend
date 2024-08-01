@@ -72,6 +72,7 @@ textarea {
     color: #D9C6B5;
     font-size: 14px;
     font-family: 'Inika', serif;
+    cursor: pointer;
 }
 
 .button__area {
