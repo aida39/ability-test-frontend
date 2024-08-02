@@ -2,10 +2,13 @@
 const contactLists = ref([])
 const categoryLists = ref([])
 
-const { data } = await useFetch('http://127.0.0.1:80/api/admin')
+const fetchData = async () => {
+    const { data } = await useFetch('http://127.0.0.1:80/api/admin')
+    contactLists.value = data.value.data
+    categoryLists.value = data.value.category
+}
 
-contactLists.value = data.value.data
-categoryLists.value = data.value.category
+fetchData()
 
 const getGenderText = (value) => {
     switch (value) {
@@ -31,8 +34,20 @@ const closeModal = () => {
     selectedContact.value = null
 }
 
-</script>
+const confirmAction = (message) => {
+    return confirm(message);
+}
 
+const deleteContact = async (id) => {
+    if (confirmAction('削除してもよろしいですか？')) {
+        await useFetch(`http://127.0.0.1:80/api/delete/${id}`, {
+            method: 'DELETE'
+        });
+        closeModal();
+        await fetchData();  // データを再取得して一覧を更新
+    }
+};
+</script>
 
 <template>
     <div class="admin__container">
@@ -119,16 +134,49 @@ const closeModal = () => {
     </form>
 
     <div id="overlay" v-show="showContent" @click="closeModal">
-        <div id="content" @click.stop v-if="selectedContact">
-            <p>お名前: {{ selectedContact.last_name }}{{ selectedContact.first_name }}</p>
-            <p>性別: {{ getGenderText(selectedContact.gender) }}</p>
-            <p>メールアドレス: {{ selectedContact.email }}</p>
-            <p>電話番号: {{ selectedContact.tell }}</p>
-            <p>住所: {{ selectedContact.address }}</p>
-            <p>建物名: {{ selectedContact.building }}</p>
-            <p>お問い合わせの種類: {{ selectedContact.category.content }}</p>
-            <p>お問い合わせ内容: {{ selectedContact.detail }}</p>
-            <button @click="closeModal">閉じる</button>
+        <div id="content" @click.stop v-if="selectedContact" class="delete__container">
+            <div class="back-button">
+                <span @click="closeModal">×</span>
+            </div>
+            <table class="delete__table">
+                <tr class="delete__table__row">
+                    <th class="delete__table__header">お名前</th>
+                    <td>{{ selectedContact.last_name }} {{ selectedContact.first_name }}</td>
+                </tr>
+                <tr class="delete__table__row">
+                    <th class="delete__table__header">性別</th>
+                    <td>{{ getGenderText(selectedContact.gender) }}</td>
+                </tr>
+                <tr class="delete__table__row">
+                    <th class="delete__table__header">メールアドレス</th>
+                    <td> {{ selectedContact.email }}</td>
+                </tr>
+                <tr class="delete__table__row">
+                    <th class="delete__table__header">電話番号</th>
+                    <td>{{ selectedContact.tell }}</td>
+                </tr>
+                <tr class="delete__table__row">
+                    <th class="delete__table__header">住所</th>
+                    <td>{{ selectedContact.address }}</td>
+                </tr>
+                <tr class="delete__table__row">
+                    <th class="delete__table__header">建物名</th>
+                    <td> {{ selectedContact.building }}</td>
+                </tr>
+                <tr class="delete__table__row">
+                    <th class="delete__table__header">お問い合わせの種類</th>
+                    <td> {{ selectedContact.category.content }}</td>
+                </tr>
+                <tr class="delete__table__row">
+                    <th class="delete__table__header">お問い合わせ内容</th>
+                    <td>{{ selectedContact.detail }}</td>
+                </tr>
+            </table>
+            <form @submit.prevent="submitForm">
+                <div class="button__area">
+                    <button @click="deleteContact(selectedContact.id)" class="delete-button" type="submit">削除</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -249,11 +297,8 @@ body {
     font-size: 16px;
     border: 1px solid #E3DED9;
     background-color: #FBFBFB;
-}
-
-.modal-button a {
     color: #BEB1A6;
-    text-decoration: none;
+    cursor: pointer;
 }
 
 #overlay {
@@ -267,7 +312,7 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.2);
-/* background-color: (0,0,0,0.5); */
+    /* background-color: (0,0,0,0.5); */
     /*　画面の中央に要素を表示させる設定　*/
     display: flex;
     align-items: center;
@@ -278,7 +323,53 @@ body {
     z-index: 2;
     width: 50%;
     padding: 1em;
-    border:1px solid #8B7969;
+    border: 1px solid #8B7969;
     background: #fff;
+}
+
+.delete__container {
+    width: 50%;
+    margin: 0 auto;
+}
+
+.back-button {
+    display: flex;
+    justify-content: end;
+    margin: 20px 50px 0 0;
+}
+
+.back-button span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 31px;
+    border: 1px solid #8B7969;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.delete__table {
+    margin: 40px auto;
+
+}
+
+.delete__table__header {
+    text-align: start;
+    padding-right: 40px;
+}
+
+.delete__table__row {
+    height: 65px;
+}
+
+.delete-button {
+    padding: 10px 25px;
+    border: none;
+    background-color: #ba360e;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
 }
 </style>
