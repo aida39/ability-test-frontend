@@ -1,6 +1,12 @@
 <script setup>
 const contactLists = ref([])
 const categoryLists = ref([])
+const formData = ref({
+    gender: '',
+    category_id: '',
+    keyword: '',
+    created_at: ''
+})
 
 const fetchData = async () => {
     const { data } = await useFetch('http://127.0.0.1:80/api/admin')
@@ -47,6 +53,21 @@ const deleteContact = async (id) => {
         await fetchData();  // データを再取得して一覧を更新
     }
 };
+
+const searchData = async () => {
+    const { data } = await useFetch('http://127.0.0.1:80/api/search', {
+        method: 'GET',
+        params: {
+            gender: formData.value.gender,
+            category_id: formData.value.category_id,
+            keyword: formData.value.keyword,
+            created_at: formData.value.created_at,
+
+        }
+    });
+    contactLists.value = data.value.data
+    categoryLists.value = data.value.category
+}
 </script>
 
 <template>
@@ -56,29 +77,30 @@ const deleteContact = async (id) => {
         </div>
         <div class="admin__content">
             <div class="admin__search">
-                <form class="admin__form" action="/search" method="get">
+                <form class="admin__form" @submit.prevent="searchData">
                     <div class="admin__form__item">
                         <div class="admin__form__input-area">
-                            <input class="admin__form__item-keyword" type="search" name="keyword"
-                                placeholder="名前やメールアドレスを入力してください">
+                            <input v-model="formData.keyword" class="admin__form__item-keyword" type="search"
+                                name="keyword" placeholder="名前やメールアドレスを入力してください">
                             <button class="admin__form__button" type="submit">
                                 <img src="@/assets/images/icon.png" alt="heart-icon">
                             </button>
                         </div>
-                        <select class="admin__form__item-gender" name="gender">
+                        <select v-model="formData.gender" class="admin__form__item-gender" name="gender">
                             <option value="">性別</option>
                             <option value="">全て</option>
                             <option value="1">男性</option>
                             <option value="2">女性</option>
                             <option value="3">その他</option>
                         </select>
-                        <select class="admin__form__item-category" name="category_id">
+                        <select v-model="formData.category_id" class="admin__form__item-category" name="category_id">
                             <option value="">お問い合わせの種類</option>
-                            <option v-for="category in categoryLists" :key="category.id" :value="category">{{
+                            <option v-for="category in categoryLists" :key="category.id" :value="category.id">{{
                                 category.content }}
                             </option>
                         </select>
-                        <input class="admin__form__item-date" type="date" name="created_at" />
+                        <input v-model="formData.created_at" class="admin__form__item-date" type="date"
+                            name="created_at" />
                     </div>
                 </form>
             </div>
@@ -126,8 +148,7 @@ const deleteContact = async (id) => {
             </div>
         </div>
     </div>
-
-    <form action="/admin" method="get">
+    <form @submit.prevent="fetchData">
         <div class="button__area">
             <button class="common-button">リセット</button>
         </div>
@@ -223,6 +244,7 @@ body {
     right: 5px;
     border: none;
     background-color: #FBFBFB;
+    cursor: pointer;
 }
 
 .admin__form__item-gender {
