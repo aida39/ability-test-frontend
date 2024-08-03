@@ -68,6 +68,41 @@ const searchData = async () => {
     contactLists.value = data.value.data
     categoryLists.value = data.value.category
 }
+
+const generateCSV = (data) => {
+    const headers = ['お名前', '性別', 'メールアドレス', 'お問い合わせの種類','お問い合わせ内容'];
+    const csvContent = [
+        headers.join(','),
+        ...data.map(contact => [
+            `${contact.last_name} ${contact.first_name}`,
+            getGenderText(contact.gender),
+            contact.email,
+            contact.category.content,
+            contact.detail
+        ].join(','))
+    ].join('\n');
+
+    return csvContent;
+};
+
+const downloadCSV = (csvContent, fileName) => {
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', fileName);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+};
+
+const handleExport = () => {
+    const csvContent = generateCSV(contactLists.value);
+    downloadCSV(csvContent, 'contacts.csv');
+};
 </script>
 
 <template>
@@ -106,9 +141,7 @@ const searchData = async () => {
             </div>
             <div class="admin__function">
                 <div class="admin__function-export">
-                    <form action="/download" method="get">
-                        <button class="download-button">エクスポート</button>
-                    </form>
+                    <button @click="handleExport" class="download-button">エクスポート</button>
                 </div>
                 <div class="admin__function-pagination">
                     <!-- {{ $contacts -> appends(request() -> query()) -> links('vendor.pagination.pagination') }} -->
@@ -284,6 +317,7 @@ body {
     border: none;
     padding: 10px 20px;
     font-size: 18px;
+    cursor: pointer;
 }
 
 .admin__table__inner {
