@@ -8,14 +8,21 @@ const formData = ref({
     created_at: ''
 })
 
-const fetchData = async () => {
-    const { data } = await useFetch('http://127.0.0.1:80/api/admin')
-    contactLists.value = data.value.data
+const currentPage = ref(1)
+const totalPages = ref(1)
+
+const fetchData = async (page = 1) => {
+    const { data } = await useFetch(`http://127.0.0.1:80/api/admin?page=${page}`)
+    contactLists.value = data.value.data.data // ページネーションされたデータの'data'プロパティにアクセス
     categoryLists.value = data.value.category
+    currentPage.value = data.value.data.current_page
+    totalPages.value = data.value.data.last_page
 }
 
 fetchData()
-
+const changePage = (page) => {
+    fetchData(page)
+}
 const getGenderText = (value) => {
     switch (value) {
         case 1:
@@ -143,8 +150,11 @@ const handleExport = () => {
                 <div class="admin__function-export">
                     <button @click="handleExport" class="download-button">エクスポート</button>
                 </div>
-                <div class="admin__function-pagination">
-                    <!-- {{ $contacts -> appends(request() -> query()) -> links('vendor.pagination.pagination') }} -->
+                <div class="pagination">
+                    <button v-for="page in totalPages" :key="page" @click="changePage(page)"
+                        :class="{ active: page === currentPage }">
+                        {{ page }}
+                    </button>
                 </div>
             </div>
             <div class="admin__table">
@@ -369,7 +379,7 @@ body {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.2);
     /* background-color: (0,0,0,0.5); */
-    /*　画面の中央に要素を表示させる設定　*/
+    /*　画面の中央に要素を表��させる設定　*/
     display: flex;
     align-items: center;
     justify-content: center;
@@ -427,5 +437,18 @@ body {
     color: #fff;
     font-size: 18px;
     cursor: pointer;
+}
+
+.pagination button {
+    padding: 5px 10px;
+    border: 0.5px solid #E3DED9;
+    background-color: #FBFBFB;
+    color: #8B7969;
+    cursor: pointer;
+}
+
+.pagination button.active {
+    background-color: #8B7969;
+    color: #FBFBFB;
 }
 </style>

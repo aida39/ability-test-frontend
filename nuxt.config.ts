@@ -2,6 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
+
   app: {
   head: {
       link: [{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -10,8 +11,11 @@ export default defineNuxtConfig({
       ],
     },
   },
+
   css: [
     '/assets/style/reset.css',
     '/assets/style/common.css'
   ],
+
+  modules: ["@nuxt/ui"]
 })
